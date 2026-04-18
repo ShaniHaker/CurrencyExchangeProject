@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Currency Exchange SDK — Documentation</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 860px; margin: 40px auto; padding: 0 20px; color: #222; line-height: 1.6; }
+    h1 { color: #1a73e8; }
+    h2 { border-bottom: 2px solid #e8eaed; padding-bottom: 6px; margin-top: 40px; }
+    h3 { color: #444; }
+    code { background: #f1f3f4; padding: 2px 6px; border-radius: 4px; font-size: 0.92em; }
+    pre { background: #f1f3f4; padding: 16px; border-radius: 8px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+    th { background: #f1f3f4; }
+    .badge { display: inline-block; margin-bottom: 12px; }
+    .links a { margin-right: 16px; color: #1a73e8; text-decoration: none; }
+    .links a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<h1>Currency Exchange SDK</h1>
+
+<p class="links">
+  <a href="https://github.com/ShaniHaker/CurrencyExchangeProject">GitHub</a>
+  <a href="https://jitpack.io/#ShaniHaker/CurrencyExchangeProject">JitPack</a>
+  <a href="https://web-production-4ba4.up.railway.app/currencies">Live API</a>
+  <a href="https://github.com/ShaniHaker/currency-exchange-api">Backend Repo</a>
+</p>
+
+<p>An Android SDK that provides simple Kotlin methods for live currency exchange rates, conversion, favorites, and history — powered by a Flask + MongoDB backend deployed on Railway.</p>
+
+<h2>Installation</h2>
+
+<h3>1. Add JitPack to <code>settings.gradle.kts</code></h3>
+<pre><code>dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
+}</code></pre>
+
+<h3>2. Add the dependency</h3>
+<pre><code>dependencies {
+    implementation("com.github.ShaniHaker:currencysdk:1.0.1")
+}</code></pre>
+
+<h2>Usage</h2>
+
+<pre><code>import com.example.currencysdk.CurrencySdk
+
+val sdk = CurrencySdk()
+
+viewModelScope.launch {
+    // Get supported currencies
+    val currencies = sdk.getSupportedCurrencies()
+
+    // Get live exchange rate
+    val rate = sdk.getExchangeRate("USD", "ILS")
+
+    // Convert an amount
+    val result = sdk.convertAmount("USD", "ILS", 100.0)
+
+    // Favorites
+    sdk.addFavorite("USD", "ILS")
+    val favorites = sdk.getFavorites()
+    sdk.deleteFavorite(favorites.favorites[0].id)
+
+    // History
+    val history = sdk.getHistory()
+}</code></pre>
+
+<h2>SDK Methods</h2>
+
+<table>
+  <tr><th>Method</th><th>Description</th><th>Returns</th></tr>
+  <tr><td><code>getSupportedCurrencies()</code></td><td>List all supported currencies</td><td>CurrenciesResponse</td></tr>
+  <tr><td><code>getExchangeRate(from, to)</code></td><td>Live exchange rate</td><td>RateResponse</td></tr>
+  <tr><td><code>convertAmount(from, to, amount)</code></td><td>Convert and save to history</td><td>ConversionResponse</td></tr>
+  <tr><td><code>getFavorites()</code></td><td>All saved favorites</td><td>FavoritesResponse</td></tr>
+  <tr><td><code>addFavorite(from, to)</code></td><td>Save a currency pair</td><td>MessageResponse</td></tr>
+  <tr><td><code>deleteFavorite(id)</code></td><td>Remove a favorite</td><td>MessageResponse</td></tr>
+  <tr><td><code>getHistory()</code></td><td>All past conversions</td><td>HistoryResponse</td></tr>
+</table>
+
+<h2>API Endpoints</h2>
+
+<table>
+  <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+  <tr><td>GET</td><td><code>/currencies</code></td><td>Supported currencies</td></tr>
+  <tr><td>GET</td><td><code>/rates?from=USD&amp;to=ILS</code></td><td>Live exchange rate</td></tr>
+  <tr><td>GET</td><td><code>/convert?from=USD&amp;to=ILS&amp;amount=100</code></td><td>Convert amount</td></tr>
+  <tr><td>GET</td><td><code>/favorites</code></td><td>List favorites</td></tr>
+  <tr><td>POST</td><td><code>/favorites</code></td><td>Save favorite</td></tr>
+  <tr><td>DELETE</td><td><code>/favorites/&lt;id&gt;</code></td><td>Delete favorite</td></tr>
+  <tr><td>GET</td><td><code>/history</code></td><td>Conversion history</td></tr>
+</table>
+
+<h2>Architecture</h2>
+<pre><code>Example App  →  CurrencySdk  →  Retrofit / OkHttp  →  Flask API (Railway)
+                                                              ↓
+                                                       MongoDB Atlas</code></pre>
+
+<h2>Tech Stack</h2>
+<table>
+  <tr><th>Component</th><th>Technology</th></tr>
+  <tr><td>Language</td><td>Kotlin</td></tr>
+  <tr><td>UI</td><td>Jetpack Compose + Material 3</td></tr>
+  <tr><td>Architecture</td><td>MVVM (ViewModel + StateFlow)</td></tr>
+  <tr><td>Networking</td><td>Retrofit 3 + OkHttp 5 + Gson</td></tr>
+  <tr><td>Async</td><td>Kotlin Coroutines</td></tr>
+  <tr><td>Backend</td><td>Flask 3 + MongoDB Atlas</td></tr>
+  <tr><td>Deployment</td><td>Railway</td></tr>
+  <tr><td>Distribution</td><td>JitPack</td></tr>
+</table>
+
+<hr/>
+<p>MIT License &copy; 2026 ShaniHaker</p>
+
+</body>
+</html>
