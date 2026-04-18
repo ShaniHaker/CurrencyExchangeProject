@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
+    id("maven-publish")  // needed for JitPack to publish this library
 }
 
 android {
@@ -49,4 +50,25 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+
+// ---------------------------------------------------------------------------
+// JitPack publishing configuration
+// ---------------------------------------------------------------------------
+// afterEvaluate is required because Android components are only available
+// after the android {} block has been fully evaluated.
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+
+                // JitPack uses these three values to identify the library.
+                // groupId must be com.github.<your-github-username>
+                groupId = "com.github.ShaniHaker"
+                artifactId = "currencysdk"
+                version = "1.0.0"
+            }
+        }
+    }
 }
