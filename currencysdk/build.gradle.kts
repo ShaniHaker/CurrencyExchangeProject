@@ -27,6 +27,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    // Required for AGP 7.1+ — explicitly registers the "release" component
+    // so that maven-publish can find it in the afterEvaluate block below.
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
